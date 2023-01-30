@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "obey-the-testing-goat"
+version = "0.1.0"
+description = "Working code for Harry Percival's Obey the Testing GGoat"
+authors = ["Patrick Godschalk <patrick@kernelpanics.nl>"]
+license = "UNLICENSED"
+readme = "README.md"
+packages = [{include = "obey_the_testing_goat"}]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+django = "<1.12"
+selenium = "<4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
