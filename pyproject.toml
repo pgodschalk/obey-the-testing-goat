@@ -9,7 +9,7 @@ packages = [{include = "obey_the_testing_goat"}]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-django = "<1.12"
+django = "<2.3"
 selenium = "<4"
 flake8 = "<6"
 black = "^22.12.0"
