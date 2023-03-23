@@ -30,7 +30,7 @@ sudo certbot certonly -d superlists-staging.example.org
 - replace `REPOSITORY` with, e.g, `obey-the-testing-goat`
 - replace `CONTAINER_NAME` with, e.g., `obey-the-testing-goat`
 
-## Folder structure:
+## Folder structure
 
 Assume we have a user account at /home/username
 
