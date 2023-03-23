@@ -25,7 +25,11 @@ SECRET_KEY = "$#-fzr9@)swc#i=$e7!+p@c3%7vpbl)tuq_7#l()9^#fpp2yk3"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.environ.get("SERVERNAMES").split(" ")
+ALLOWED_HOSTS = (
+    os.environ.get("SERVERNAMES").split(" ")
+    if os.environ.get("SERVERNAMES") is not None
+    else []
+)
 
 
 # Application definition
