@@ -18,7 +18,7 @@ RUN pip install --user --requirement requirements.txt
 
 COPY --chown=worker:worker . .
 
-RUN python manage.py migrate
+RUN python manage.py migrate --noinput
 
 ENTRYPOINT ["python", "manage.py"]
 CMD ["runserver"]
