@@ -20,6 +20,7 @@ COPY --chown=worker:worker . .
 
 RUN python manage.py migrate
 
-CMD ["python", "manage.py", "runserver"]
+ENTRYPOINT ["python", "manage.py"]
+CMD ["runserver"]
 
 EXPOSE 8000
