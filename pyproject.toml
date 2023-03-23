@@ -16,6 +16,7 @@ gunicorn = "^20.1.0"
 black = "<22"
 flake8 = "<6"
 selenium = "<4"
+fabric3 = "^1.14.post1"
 
 [build-system]
 requires = ["poetry-core"]
