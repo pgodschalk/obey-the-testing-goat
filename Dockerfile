@@ -18,6 +18,7 @@ RUN pip install --user --requirement requirements.txt
 
 COPY --chown=worker:worker . .
 
+RUN python manage.py collectstatic --noinput
 RUN python manage.py migrate --noinput
 
 ENTRYPOINT ["python", "manage.py"]
