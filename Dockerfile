@@ -21,7 +21,7 @@ COPY --chown=worker:worker . .
 RUN python manage.py collectstatic --noinput
 RUN python manage.py migrate --noinput
 
-ENTRYPOINT ["python", "manage.py"]
-CMD ["runserver"]
+ENTRYPOINT ["python"]
+CMD ["-m", "gunicorn", "superlists.wsgi:application"]
 
 EXPOSE 8000
