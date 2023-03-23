@@ -10,10 +10,11 @@ packages = [{include = "obey_the_testing_goat"}]
 [tool.poetry.dependencies]
 python = "^3.6"
 django = "<1.12"
-selenium = "<4"
-flake8 = "<6"
-black = "<22"
 
+[tool.poetry.group.dev.dependencies]
+black = "<22"
+flake8 = "<6"
+selenium = "<4"
 
 [build-system]
 requires = ["poetry-core"]
