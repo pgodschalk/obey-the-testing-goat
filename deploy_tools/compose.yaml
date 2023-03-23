@@ -1,0 +1,12 @@
+---
+services:
+  obey-the-testing-goat:
+    image: ghcr.io/pgodschalk/obey-the-testing-goat:latest
+    container_name: obey-the-testing-goat
+    command: -m gunicorn superlists.wsgi:application --bind 0.0.0.0:8000
+    ports:
+      - 127.0.0.1:8001:8000
+    env_file: .env
+    restart: on-failure:5
+    security_opt:
+      - no-new-privileges
