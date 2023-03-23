@@ -22,6 +22,7 @@ sudo certbot certonly -d superlists-staging.example.org
 
 - see apache2.template.conf
 - replace `DOMAIN` with, e.g., `staging.example.org`
+- replace `PORT` with, e.g., `8001`
 
 ## Compose config
 

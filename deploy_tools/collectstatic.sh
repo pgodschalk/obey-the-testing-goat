@@ -63,9 +63,9 @@ parse_params() {
 parse_params "$@"
 setup_colors
 
-podman cp obey-the-testing-goat:static/ /var/www/obey-the-testing-goat-static/.
-chcon -R -u system_u /var/www/obey-the-testing-goat-static
-chcon -R -t httpd_sys_content_t /var/www/obey-the-testing-goat-static
+podman cp $(podman-compose ps --quiet | sed -n 1p):static/ "/var/www/${PWD##*/}-static/."
+chcon -R -u system_u "/var/www/${PWD##*/}-static"
+chcon -R -t httpd_sys_content_t "/var/www/${PWD##*/}-static"
 
 msg "${RED}Read parameters:${NOFORMAT}"
 msg "- arguments: ${args[*]-}"
