@@ -10,6 +10,6 @@
 - ~~Add a URL for creating a new list via POST~~
 - ~~Add URLs for adding a new item to an existing list via POST~~
 - ~~Refactor away some duplication in `urls.py`~~
-- Remove hardcoded URLs from `views.py`
-- Remove hardcoded URL from forms in `list.html` and `home.html`
+- ~~Remove hardcoded URLs from `views.py`~~
+- ~~Remove hardcoded URL from forms in `list.html` and `home.html`~~
 - Remove duplication of validation logic in views
