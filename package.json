@@ -1,0 +1,31 @@
+{
+  "name": "obey-the-testing-goat",
+  "version": "0.1.0",
+  "description": "Working code for Harry Percival's Obey the Testing Goat",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pgodschalk/obey-the-testing-goat.git"
+  },
+  "author": "Patrick Godschalk <patrick@kernelpanics.nl>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/pgodschalk/obey-the-testing-goat/issues"
+  },
+  "homepage": "https://github.com/pgodschalk/obey-the-testing-goat#readme",
+  "devDependencies": {
+    "eslint": "^8.37.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-qunit": "^7.3.4",
+    "prettier": "^2.8.7",
+    "stylelint": "^15.3.0",
+    "stylelint-config-recess-order": "^4.0.0",
+    "stylelint-config-standard": "^31.0.0"
+  },
+  "private": true
+}
