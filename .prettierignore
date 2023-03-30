@@ -130,3 +130,5 @@ dist
 .pnp.*
 **/qunit-*.js
 **/jquery-*.min.js
+
+**/templates/*.html
