@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "codezombiech.gitignore",
+    "davidanson.vscode-markdownlint",
+    "dbaeumer.vscode-eslint",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "hashhar.gitattributes",
+    "mikestead.dotenv",
+    "ms-azuretools.vscode-docker",
+    "ms-python.isort",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "stylelint.vscode-stylelint",
+    "timonwong.shellcheck"
+  ]
+}
