@@ -7,6 +7,9 @@ from lists.forms import (
     ItemForm,
 )
 from lists.models import Item, List
+from lists.views import ViewAndAddToList
+
+EMPTY_LIST_ERROR = EMPTY_ITEM_ERROR
 
 
 class HomePageTest(TestCase):
@@ -80,22 +83,24 @@ class ListViewTest(TestCase):
         list_ = List.objects.create()
         return self.client.post(f"/lists/{list_.id}/", data={"text": ""})
 
-    def test_for_invalid_input_nothing_saved_to_db(self):
+    def test_for_invalid_input_means_nothing_saved_to_db(self):
         self.post_invalid_input()
+        # self.assertEqual(List.objects.all(), 0)
+        # self.assertEqual(Item.objects.all(), 0)
         self.assertEqual(Item.objects.count(), 0)
 
-    def test_for_invalid_input_renders_list_template(self):
+    def test_invalid_input_renders_list_template(self):
         response = self.post_invalid_input()
-        self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "list.html")
 
     def test_for_invalid_input_passes_form_to_template(self):
         response = self.post_invalid_input()
         self.assertIsInstance(response.context["form"], ExistingListItemForm)
 
-    def test_for_invalid_input_shows_error_on_page(self):
+    def test_invalid_input_renders_form_with_errors(self):
         response = self.post_invalid_input()
-        self.assertContains(response, escape(EMPTY_ITEM_ERROR))
+        self.assertIsInstance(response.context["form"], ExistingListItemForm)
+        self.assertContains(response, escape(EMPTY_LIST_ERROR))
 
     def test_duplicate_item_validation_errors_end_up_on_lists_page(self):
         list1 = List.objects.create()
@@ -106,6 +111,12 @@ class ListViewTest(TestCase):
         self.assertContains(response, expected_error)
         self.assertTemplateUsed(response, "list.html")
         self.assertEqual(Item.objects.all().count(), 1)
+
+    def test_cbv_gets_correct_object(self):
+        our_list = List.objects.create()
+        view = ViewAndAddToList()
+        view.kwargs = dict(pk=our_list.id)
+        self.assertEqual(view.get_object(), our_list)
 
 
 class NewListTest(TestCase):
