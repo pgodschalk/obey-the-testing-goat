@@ -5,6 +5,48 @@
     host: "{{ inventory_hostname }}"
 
   tasks:
+    - name: ensure directory exists
+      file:
+        group: "{{ ansible_ssh_user }}"
+        owner: "{{ ansible_ssh_user }}"
+        mode: 0755
+        path: /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}
+        state: present
+
+    - name: pull latest image
+      command: sudo -u {{ ansible_ssh_user }} podman-compose pull
+      changed_when: false
+
+    - name: create or update dotenv for DJANGO_DEBUG_FALSE
+      lineinfile:
+        group: "{{ ansible_ssh_user }}"
+        line: "{{ item }}"
+        mode: 0600
+        owner: "{{ ansible_ssh_user }}"
+        path: /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/.env
+      with_items:
+        - DJANGO_DEBUG_FALSE=y
+        - SITENAME={{ host }}
+      notify:
+        - restart container
+
+    - name: check if DJANGO_SECRET_KEY is set
+      lineinfile:
+        line: "DJANGO_SECRET_KEY"
+        path: /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/.env
+        state: present
+      notify:
+        - set DJANGO_SECRET_KEY
+        - restart container
+
+    - name: update static files
+      command: sudo -i {{ ansible_ssh_user }} /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/collectstatic.sh
+      changed_when: false
+
+    - name: update database
+      command: sudo -i {{ ansible_ssh_user }} podman-compose -f /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/compose.yaml exec  obey-the-testing-goat python manage.py migrate --noinput
+      changed_when: false
+
     - name: add apache2 config
       template:
         dest: /etc/httpd/conf.d/vhost-{{ host }}.conf
@@ -33,3 +75,6 @@
       service:
         name: "{{ host | replace('.', '') }}"
         state: restarted
+
+    - name: set DJANGO_SECRET_KEY
+      command: sudo -u {{ ansible_ssh_user }} python3.6 -c"import random; print(''.join(random.SystemRandom().choices('abcdefghijklmnopqrstuvwxyz0123456789', k=50)))" > /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/.env
