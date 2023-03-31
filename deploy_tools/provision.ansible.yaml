@@ -1,0 +1,35 @@
+---
+- hosts: all
+
+  vars:
+    host: "{{ inventory_hostname }}"
+
+  tasks:
+    - name: add apache2 config
+      template:
+        dest: /etc/httpd/conf.d/vhost-{{ host }}.conf
+        mode: 0644
+        src: ./apache2.conf.j2
+      notify:
+        - restart httpd
+
+    - name: write podman service script
+      template:
+        dest: /home/{{ ansible_ssh_user }}/.config/systemd/user/{{ host }}.service
+        group: "{{ ansible_ssh_user }}"
+        mode: 0644
+        owner: "{{ ansible_ssh_user }}"
+        src: ./{{ host | replace('.', '') }}.service.j2
+      notify:
+        - restart container
+
+  handlers:
+    - name: restart httpd
+      service:
+        name: httpd
+        state: restarted
+
+    - name: restart container
+      service:
+        name: "{{ host | replace('.', '') }}"
+        state: restarted

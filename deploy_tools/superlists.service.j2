@@ -1,0 +1,43 @@
+[Unit]
+Description=Podman container-{{ host | replace('.', '') }}_obey-the-testing-goat_1}}.service
+Documentation=man:podman-generate-systemd(1)
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=%t/containers
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Restart=on-failure
+StartLimitBurst=5
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/%n.ctr-id
+ExecStart=/usr/bin/podman run \
+	--cidfile=%t/%n.ctr-id \
+	--cgroups=no-conmon \
+	--rm \
+	--sdnotify=conmon \
+	--replace \
+	--name={{ host | replace('.', '') }}_obey-the-testing-goat_1 \
+	-d \
+	--security-opt no-new-privileges \
+	--label io.podman.compose.config-hash=123 \
+	--label io.podman.compose.project={{ host | replace('.', '') }} \
+	--label io.podman.compose.version=0.0.1 \
+	--label com.docker.compose.project={{ host | replace('.', '') }} \
+	--label com.docker.compose.project.working_dir=/home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }} \
+	--label com.docker.compose.project.config_files=compose.yaml \
+	--label com.docker.compose.container-number=1 \
+	--label com.docker.compose.service=obey-the-testing-goat \
+	--env-file /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/.env \
+	--net {{ host | replace('.', '') }}_default \
+	--network-alias obey-the-testing-goat \
+	-p 127.0.0.1:{{ wsgi_port }}:8000 ghcr.io/pgodschalk/obey-the-testing-goat:latest \
+	-m gunicorn superlists.wsgi:application \
+	--bind 0.0.0.0:8000
+ExecStop=/usr/bin/podman stop --ignore --cidfile=%t/%n.ctr-id
+ExecStopPost=/usr/bin/podman rm -f --ignore --cidfile=%t/%n.ctr-id
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=default.target

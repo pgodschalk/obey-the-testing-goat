@@ -20,6 +20,8 @@ black = "<22"
 flake8 = "<6"
 selenium = "<4"
 fabric3 = "^1.14.post1"
+ansible = "<7"
+ansible-lint = "<6"
 
 [build-system]
 requires = ["poetry-core"]

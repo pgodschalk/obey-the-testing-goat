@@ -1,0 +1,8 @@
+[live]
+superlists.dev.kernelpanics.nl ansible_become=yes ansible_ssh_user=patrick
+
+[staging]
+superlists-staging.dev.kernelpanics.nl ansible_become=yes ansible_ssh_user=patrick
+
+[local]
+localhost ansible_ssh_user=patrick ansible_ssh_port=6666 ansible_ssh_host=127.0.0.1

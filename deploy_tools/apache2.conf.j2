@@ -1,0 +1,56 @@
+<VirtualHost *:443>
+  DocumentRoot "/var/www/html"
+  ServerName {{ host }}
+  Protocols h2 http/1.1
+
+
+  ErrorLog "logs/{{ host }}_error_log"
+  TransferLog logs/{{ host }}_access_log
+  LogLevel notice core:info
+
+  SSLEngine on
+
+  SSLCertificateFile \
+    /etc/letsencrypt/live/{{ host }}/fullchain.pem
+  SSLCertificateKeyFile \
+    /etc/letsencrypt/live/{{ host }}/privkey.pem
+
+  <FilesMatch "\.(cgi|shtml|phtml|php)$">
+    SSLOptions +StdEnvVars
+  </FilesMatch>
+  <Directory "/var/www/cgi-bin">
+    SSLOptions +StdEnvVars
+    Options None
+
+    <LimitExcept GET POST OPTIONS>
+      Require all denied
+    </LimitExcept>
+  </Directory>
+
+  BrowserMatch "MSIE [2-5]" \
+    nokeepalive ssl-unclean-shutdown \
+    downgrade-1.0 force-response-1.0
+
+  CustomLog logs/{{ host }}_request_log combined
+
+  Header always set Content-Security-Policy \
+    "default-src 'self'; child-src 'self'; connect-src 'self'; font-src data: 'self'; frame-src 'self'; img-src 'self' data:; manifest-src 'self'; media-src 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+  Header always set Cross-Origin-Embedder-Policy "require-corp" \
+    "expr=%{CONTENT_TYPE} =~ m#text\/(html|javascript)|application\/pdf|xml#i"
+  Header always set Cross-Origin-Opener-Policy "same-origin" \
+    "expr=%{CONTENT_TYPE} =~ m#text\/(html|javascript)|application\/pdf|xml#i"
+  Header always set Cross-Origin-Resource-Policy "same-origin" \
+    "expr=%{CONTENT_TYPE} =~ m#text\/(html|javascript)|application\/pdf|xml#i"
+
+  ProxyPass /.well-known/acme-challenge/ !
+  ProxyPass /static !
+  ProxyPass / http://127.0.0.1:{{ wsgi_port }}/
+  ProxyPassReverse / http://127.0.0.1:{{ wsgi_port }}/
+  ProxyRequests off
+  ProxyPreserveHost on
+  ProxyAddHeaders on
+  RequestHeader set X-Forwarded-Proto "https"
+  RequestHeader set X-Real-IP %{REMOTE_ADDR}s
+
+  Alias /static /var/www/{{ host }}-static/static
+</VirtualHost>
