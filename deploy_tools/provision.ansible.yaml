@@ -5,55 +5,60 @@
     host: "{{ inventory_hostname }}"
 
   tasks:
+    - name: ensure required packages are installed
+      package:
+        name: "{{ item  }}"
+        state: present
+      become: true
+      with_items:
+        - httpd
+        - mod_ssl
+        - podman
+        - podman-compose
+
     - name: ensure directory exists
       file:
         group: "{{ ansible_ssh_user }}"
         owner: "{{ ansible_ssh_user }}"
         mode: 0755
         path: /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}
-        state: present
+        state: directory
+
+    - name: ensure compose.yaml exists
+      template:
+        dest: /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/compose.yaml
+        group: "{{ ansible_ssh_user }}"
+        mode: 0644
+        owner: "{{ ansible_ssh_user }}"
+        src: ./compose.yaml.j2
+      vars:
+        namespace: pgodschalk
+        repository: obey-the-testing-goat
 
     - name: pull latest image
-      command: sudo -u {{ ansible_ssh_user }} podman-compose pull
+      command: podman-compose --file /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/compose.yaml pull
       changed_when: false
 
-    - name: create or update dotenv for DJANGO_DEBUG_FALSE
+    - name: create or update dotenv for SITENAME
       lineinfile:
+        create: true
         group: "{{ ansible_ssh_user }}"
         line: "{{ item }}"
         mode: 0600
         owner: "{{ ansible_ssh_user }}"
         path: /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/.env
       with_items:
-        - DJANGO_DEBUG_FALSE=y
         - SITENAME={{ host }}
       notify:
         - restart container
 
-    - name: check if DJANGO_SECRET_KEY is set
-      lineinfile:
-        line: "DJANGO_SECRET_KEY"
-        path: /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/.env
-        state: present
-      notify:
-        - set DJANGO_SECRET_KEY
-        - restart container
-
-    - name: update static files
-      command: sudo -i {{ ansible_ssh_user }} /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/collectstatic.sh
-      changed_when: false
-
-    - name: update database
-      command: sudo -i {{ ansible_ssh_user }} podman-compose -f /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/compose.yaml exec  obey-the-testing-goat python manage.py migrate --noinput
-      changed_when: false
-
-    - name: add apache2 config
-      template:
-        dest: /etc/httpd/conf.d/vhost-{{ host }}.conf
-        mode: 0644
-        src: ./apache2.conf.j2
-      notify:
-        - restart httpd
+    - name: ensure systemd user scope directory exists
+      file:
+        group: "{{ ansible_ssh_user }}"
+        owner: "{{ ansible_ssh_user }}"
+        mode: 0755
+        path: /home/{{ ansible_ssh_user }}/.config/systemd/user
+        state: directory
 
     - name: write podman service script
       template:
@@ -61,20 +66,92 @@
         group: "{{ ansible_ssh_user }}"
         mode: 0644
         owner: "{{ ansible_ssh_user }}"
-        src: ./{{ host | replace('.', '') }}.service.j2
+        src: ./superlists.service.j2
       notify:
         - restart container
+
+    - name: ensure container is running
+      command: podman-compose --file /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/compose.yaml up -d
+      changed_when: false
+
+    - name: copy static file gatherer
+      copy:
+        dest: /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/collectstatic.sh
+        group: "{{ ansible_ssh_user }}"
+        mode: 0755
+        owner: "{{ ansible_ssh_user }}"
+        src: ./collectstatic.sh
+
+    - name: ensure static file path exists
+      file:
+        group: "{{ ansible_ssh_user }}"
+        path: /var/www/{{ host }}-static
+        mode: 0755
+        owner: "{{ ansible_ssh_user }}"
+        state: directory
+      become: true
+
+    - name: ensure static file path has correct context
+      file:
+        path: /var/www/{{ host }}-static
+        setype: httpd_sys_content_t
+        selevel: s0
+        serole: object_r
+        seuser: system_u
+      when: ansible_facts.selinux.status == 'enabled'
+
+    - name: update static files
+      shell: cd /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }} && ./collectstatic.sh
+      args:
+        creates: /var/www/{{ host }}-static/static/base.css
+
+    - name: update database
+      command: podman-compose --file /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/compose.yaml exec  obey-the-testing-goat python manage.py migrate --noinput
+      changed_when: false
+
+    - name: add apache2 config
+      template:
+        dest: /etc/httpd/conf.d/vhost-{{ host }}.conf
+        mode: 0644
+        src: ./apache2.conf.j2
+      become: true
+      notify:
+        - restart httpd
+
+    - name: ensure certificate path exists
+      file:
+        group: root
+        mode: 0700
+        owner: root
+        path: /etc/letsencrypt/live/{{ host }}
+        state: directory
+      become: true
+      when: vagrant_tasks
+
+    - name: ensure mkcert is present
+      get_url:
+        dest: /usr/local/bin/mkcert
+        mode: 0755
+        url: https://dl.filippo.io/mkcert/latest?for=linux/arm64
+      become: true
+      when: vagrant_tasks
+
+    - name: ensure certificate is present
+      command: /usr/local/bin/mkcert -key-file /etc/letsencrypt/live/{{ host }}/privkey.pem -cert-file /etc/letsencrypt/live/{{ host }}/fullchain.pem localhost
+      args:
+        creates: /etc/letsencrypt/live/{{ host }}/privkey.pem
+      become: true
+      when: vagrant_tasks
 
   handlers:
     - name: restart httpd
       service:
         name: httpd
         state: restarted
+      become: true
 
     - name: restart container
       service:
         name: "{{ host | replace('.', '') }}"
+        scope: user
         state: restarted
-
-    - name: set DJANGO_SECRET_KEY
-      command: sudo -u {{ ansible_ssh_user }} python3.6 -c"import random; print(''.join(random.SystemRandom().choices('abcdefghijklmnopqrstuvwxyz0123456789', k=50)))" > /home/{{ ansible_ssh_user }}/obey-the-testing-goat/{{ host }}/.env

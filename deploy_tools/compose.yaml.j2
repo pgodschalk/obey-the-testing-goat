@@ -1,0 +1,11 @@
+---
+services:
+  obey-the-testing-goat:
+    image: ghcr.io/{{ namespace }}/{{ repository }}:latest
+    command: -m gunicorn superlists.wsgi:application --bind 0.0.0.0:8000
+    ports:
+      - 127.0.0.1:${GUNICORN_PORT:-8001}:{{ wsgi_port }}
+    env_file: .env
+    restart: on-failure:5
+    security_opt:
+      - no-new-privileges

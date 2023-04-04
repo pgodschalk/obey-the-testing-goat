@@ -63,9 +63,14 @@ parse_params() {
 parse_params "$@"
 setup_colors
 
-podman cp $(podman-compose ps --quiet | sed -n 1p):static/ "/var/www/${PWD##*/}-static/."
-chcon -R -u system_u "/var/www/${PWD##*/}-static"
-chcon -R -t httpd_sys_content_t "/var/www/${PWD##*/}-static"
+SELINUXSTATUS=$(getenforce)
+
+podman cp "$(podman-compose ps --quiet | sed -n 1p):static/" "/var/www/${PWD##*/}-static/."
+
+if [ "$SELINUXSTATUS" != "Disabled" ]; then
+  chcon -R -u system_u "/var/www/${PWD##*/}-static"
+  chcon -R -t httpd_sys_content_t "/var/www/${PWD##*/}-static"
+fi
 
 msg "${RED}Read parameters:${NOFORMAT}"
 msg "- arguments: ${args[*]-}"
