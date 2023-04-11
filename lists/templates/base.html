@@ -17,7 +17,7 @@
             <ul class="nav navbar-nav navbar-right">
               <li class="navbar-text">Logged in as {{ user.email }}</li>
               <li>
-                <a href="#">Log out</a>
+                <a href="{% url 'logout' %}">Log out</a>
               </li>
             </ul>
           {% else %}
