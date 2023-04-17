@@ -91,6 +91,6 @@ fab deploy:host=foo@example.org
 
 - **Patrick Godschalk** - _Developer_ - [pgodschalk](https://github.com/pgodschalk)
 
-[SPDX](https://spdx.org/licenses/) license: `UNLICENSED`
+[SPDX](https://spdx.org/licenses/#:~:text=Creative%20Commons%20Attribution%20Non%20Commercial%20Share%20Alike%203.0%20Unported) license: `CC-BY-NC-SA-3.0`
 
 Copyright (c) 2023 Patrick Godschalk
