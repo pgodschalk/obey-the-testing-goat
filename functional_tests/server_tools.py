@@ -3,9 +3,8 @@ from fabric.context_managers import settings, shell_env
 
 
 def _get_manage_dot_py(host):
-    return (
-        f"podman exec {host}devkernelpanicslnl_obey-the-testing-goat_1 python manage.py"
-    )
+    parsed_host = host.strip(".")
+    return f"podman exec {parsed_host}_obey-the-testing-goat_1 python manage.py"
 
 
 def reset_database(host):
@@ -15,7 +14,7 @@ def reset_database(host):
 
 
 def _get_server_env_vars(host):
-    env_lines = run(f"cat ~/{host}.dev.kernelpanics.nl/.env").splitlines()
+    env_lines = run(f"cat ~/{host}/.env").splitlines()
     return dict(line.split("=") for line in env_lines if line)
 
 
