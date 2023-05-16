@@ -16,6 +16,20 @@ SCREEN_DUMP_LOCATION = os.path.join(
 )
 
 
+def wait(fn):
+    def modified_fn(*args, **kwargs):
+        start_time = time.time()
+        while True:
+            try:
+                return fn(*args, **kwargs)
+            except (AssertionError, WebDriverException) as e:
+                if time.time() - start_time > MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+
+    return modified_fn
+
+
 class FunctionalTest(StaticLiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -39,19 +53,6 @@ class FunctionalTest(StaticLiveServerTestCase):
     def _test_has_failed(self):
         # slightly obscure but couldn't find a better way!
         return any(error for (method, error) in self._outcome.errors)
-
-    def wait(fn):
-        def modified_fn(*args, **kwargs):
-            start_time = time.time()
-            while True:
-                try:
-                    return fn(*args, **kwargs)
-                except (AssertionError, WebDriverException) as e:
-                    if time.time() - start_time > MAX_WAIT:
-                        raise e
-                    time.sleep(0.5)
-
-        return modified_fn
 
     def create_pre_authenticated_session(self, email):
         if self.staging_server:
