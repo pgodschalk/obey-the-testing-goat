@@ -23,6 +23,8 @@ Working code for Harry Percival's Obey the Testing Goat
 
 Working code for Harry Percival's Obey the Testing Goat
 
+![Test-Driven Development with Python](https://covers.oreillystatic.com/images/0636920051091/lrg.jpg)
+
 ## Getting started
 
 ### Dependencies
