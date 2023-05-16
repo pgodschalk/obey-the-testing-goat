@@ -2,6 +2,8 @@
 
 Working code for Harry Percival's Obey the Testing Goat
 
+![tests](https://github.com/github/docs/actions/workflows/test.yml/badge.svg?branch=main)
+
 ## Table of contents
 
 - [@pgodschalk/obey-the-testing-goat](#pgodschalkobey-the-testing-goat)
@@ -73,8 +75,7 @@ python manage.py test functional_tests
 #### Unit tests
 
 ```sh
-python manage.py test lists
-open lists/static/tests/tests.html
+python manage.py test lists && npm run test
 ```
 
 ## Deployment
