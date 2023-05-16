@@ -52,7 +52,7 @@ class ExistingListItemFormTest(TestCase):
         self.assertEqual(new_item, Item.objects.all()[0])
 
 
-class NewListFormTest(unittest.TestCase):
+class NewListFormTest(TestCase):
     @patch("lists.forms.List.create_new")
     def test_save_creates_new_list_From_post_data_if_user_not_authenticated(
         self, mock_List_create_new
