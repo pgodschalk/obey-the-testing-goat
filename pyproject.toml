@@ -20,6 +20,7 @@ black = "<22"
 flake8 = "<6"
 selenium = "<4"
 fabric3 = "^1.14.post1"
+behave-django = "^1.4.0"
 
 [build-system]
 requires = ["poetry-core"]

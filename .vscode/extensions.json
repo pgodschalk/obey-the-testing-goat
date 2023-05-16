@@ -1,5 +1,6 @@
 {
   "recommendations": [
+    "alexkrechik.cucumberautocomplete",
     "codezombiech.gitignore",
     "davidanson.vscode-markdownlint",
     "dbaeumer.vscode-eslint",
