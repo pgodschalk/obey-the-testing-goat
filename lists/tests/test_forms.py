@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from lists.forms import (
     DUPLICATE_ITEM_ERROR,
@@ -9,6 +10,8 @@ from lists.forms import (
 from lists.models import Item, List
 import unittest
 from unittest.mock import patch, Mock
+
+User = get_user_model()
 
 
 class ItemFormTest(TestCase):
@@ -79,3 +82,10 @@ class NewListFormTest(unittest.TestCase):
         form.is_valid()
         response = form.save(owner=user)
         self.assertEqual(response, mock_List_create_new.return_value)
+
+    def test_can_share_with_another_user(self):
+        list_ = List.objects.create()
+        user = User.objects.create(email="a@example.org")
+        list_.shared_with.add("a@example.org")
+        list_in_db = List.objects.get(id=list_.id)
+        self.assertIn(user, list_in_db.shared_with.all())
