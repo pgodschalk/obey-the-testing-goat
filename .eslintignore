@@ -130,3 +130,4 @@ dist
 .pnp.*
 **/qunit-*.js
 **/jquery-*.min.js
+lists/static/tests/runner.js

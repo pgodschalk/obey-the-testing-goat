@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Working code for Harry Percival's Obey the Testing Goat",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/phantomjs lists/static/tests/runner.js lists/static/tests/tests.html"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-qunit": "^7.3.4",
+    "phantomjs-prebuilt": "^2.1.16",
     "prettier": "^2.8.7",
     "stylelint": "^15.3.0",
     "stylelint-config-recess-order": "^4.0.0",
