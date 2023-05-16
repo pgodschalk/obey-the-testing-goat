@@ -2,7 +2,7 @@
 
 Working code for Harry Percival's Obey the Testing Goat
 
-![tests](https://github.com/github/docs/actions/workflows/test.yml/badge.svg?branch=main)
+![tests](https://github.com/pgodschalk/obey-the-testing-goat/actions/workflows/test.yml/badge.svg?branch=main)
 
 ## Table of contents
 
