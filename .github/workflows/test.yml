@@ -40,3 +40,9 @@ jobs:
           name: pytest-results-${{ matrix.python-version }}
           path: junit/test-results-${{ matrix.python-version }}.xml
         if: ${{ always() }}
+      - name: Upload pytest screendumps
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-screendumps-${{ matrix.python-version }}
+          path: functional_tests/screendumps/
+        if: ${{ always() }}
