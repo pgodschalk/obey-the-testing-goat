@@ -24,7 +24,7 @@
     "eslint-plugin-qunit": "^7.3.4",
     "phantomjs-prebuilt": "^2.1.16",
     "prettier": "^2.8.7",
-    "stylelint": "^15.3.0",
+    "stylelint": "^15.10.1",
     "stylelint-config-recess-order": "^4.0.0",
     "stylelint-config-standard": "^31.0.0"
   },
